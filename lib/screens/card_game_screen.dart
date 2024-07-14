@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:shed/main.dart';
+import 'package:get/get.dart';
+import 'package:shed/controllers/game_controller.dart';
+
+import '../widgets/ai_face_up_container.dart';
+import '../widgets/control_container.dart';
+import '../widgets/face_up_container.dart';
+import '../widgets/in_hand_container.dart';
+import '../widgets/piles_container.dart';
 
 class CardGameScreen extends StatelessWidget {
-  const CardGameScreen({super.key});
+  CardGameScreen({super.key});
+  final GameController controller = Get.put(GameController());
 
   @override
   Widget build(BuildContext context) {
