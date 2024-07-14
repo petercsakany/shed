@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'screens/card_game_screen.dart';
+import 'widgets/card_widget.dart';
+import 'widgets/control_button.dart';
+import 'widgets/pile_widget.dart';
+
 void main() {
   runApp(const CardGameApp());
 }
@@ -11,47 +16,6 @@ class CardGameApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: CardGameScreen(),
-    );
-  }
-}
-
-class CardGameScreen extends StatelessWidget {
-  const CardGameScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F0F0),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              color: const Color(0xFFD7CDCD),
-              child: const Center(
-                child: AiFaceUpContainer(),
-              ),
-            ),
-          ),
-          const Expanded(
-            flex: 2,
-            child: PilesContainer(),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              color: const Color(0xFFD7CDCD),
-              child: const Column(
-                children: [
-                  FaceUpContainer(),
-                  InHandContainer(),
-                ],
-              ),
-            ),
-          ),
-          const ControlContainer(),
-        ],
-      ),
     );
   }
 }
@@ -135,49 +99,6 @@ class ControlContainer extends StatelessWidget {
           ControlButton(text: 'Reset Game'),
         ],
       ),
-    );
-  }
-}
-
-class CardWidget extends StatelessWidget {
-  const CardWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      width: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      color: Colors.white,
-      child: const Center(child: Text('Card')),
-    );
-  }
-}
-
-class PileWidget extends StatelessWidget {
-  const PileWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: 60,
-      color: Colors.white,
-      child: const Center(child: Text('Pile')),
-    );
-  }
-}
-
-class ControlButton extends StatelessWidget {
-  final String text;
-
-  const ControlButton({super.key, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      child: Text(text),
     );
   }
 }
