@@ -10,7 +10,11 @@ class FaceUpContainer extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: List.generate(4, (index) => const CardWidget()),
+          children: List.generate(
+              4,
+              (index) => const CardWidget(
+                    imagePath: 'assets/images/QH.png',
+                  )),
         ),
       ),
     );
