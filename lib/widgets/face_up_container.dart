@@ -7,16 +7,18 @@ class FaceUpContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(
-              4,
-              (index) => const CardWidget(
-                    imagePath: 'assets/images/QH.png',
-                  )),
+        child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(
+          4,
+          (index) => CardWidget(
+            imagePath: 'assets/images/QD.png',
+            isSelected: false,
+            onSelect: () {},
+          ),
         ),
       ),
-    );
+    ));
   }
 }

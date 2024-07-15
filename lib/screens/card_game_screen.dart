@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shed/controllers/game_controller.dart';
-import 'package:shed/widgets/card_widget.dart';
+import 'package:shed/widgets/in_hand_container.dart';
 
 import '../widgets/ai_face_up_container.dart';
 import '../widgets/face_up_container.dart';
@@ -34,22 +34,13 @@ class CardGameScreen extends StatelessWidget {
             flex: 4,
             child: Container(
               color: const Color(0xFFD7CDCD),
-              child: Column(
-                children: [
-                  const FaceUpContainer(),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Obx(() => Row(
-                            children: gameController.playerHand
-                                .map((card) => CardWidget(
-                                      imagePath: card.imagePath,
-                                    ))
-                                .toList(),
-                          )),
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: Column(
+                  children: [
+                    const FaceUpContainer(),
+                    InHandContainer(),
+                  ],
+                ),
               ),
             ),
           ),

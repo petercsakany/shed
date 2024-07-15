@@ -80,4 +80,14 @@ class GameController extends GetxController {
   void sortPlayerHand() {
     playerHand.sort((a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank));
   }
+
+  void selectCard(CardItem card) {
+    card.isSelected = !card.isSelected;
+    if (selectedCards.contains(card)) {
+      selectedCards.remove(card);
+    } else {
+      selectedCards.add(card);
+    }
+    playerHand.refresh();
+  }
 }

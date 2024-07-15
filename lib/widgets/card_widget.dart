@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 
 class CardWidget extends StatefulWidget {
   final String imagePath;
-  const CardWidget({super.key, required this.imagePath});
+  final bool isSelected;
+  final VoidCallback onSelect;
+  const CardWidget(
+      {super.key,
+      required this.imagePath,
+      required this.isSelected,
+      required this.onSelect});
 
   @override
   State<CardWidget> createState() => _CardWidgetState();
@@ -35,19 +41,24 @@ class _CardWidgetState extends State<CardWidget>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _animation,
-      child: Container(
-        height: 80,
-        width: 60,
-        margin: const EdgeInsets.symmetric(horizontal: 1),
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(5.0),
-            child: Image.asset(
-              widget.imagePath,
-              fit: BoxFit.cover,
-            )),
-      ),
-    );
+    return GestureDetector(
+        onTap: widget.onSelect,
+        child: FadeTransition(
+          opacity: _animation,
+          child: Transform.translate(
+            offset: widget.isSelected ? const Offset(0, -10) : Offset.zero,
+            child: Container(
+              height: 80,
+              width: 60,
+              margin: const EdgeInsets.symmetric(horizontal: 1),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Image.asset(
+                    widget.imagePath,
+                    fit: BoxFit.cover,
+                  )),
+            ),
+          ),
+        ));
   }
 }

@@ -12,8 +12,10 @@ class AiFaceUpContainer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
           4,
-          (index) => const CardWidget(
+          (index) => CardWidget(
             imagePath: 'assets/images/7D.png',
+            isSelected: false,
+            onSelect: () {},
           ),
         ),
       ),
