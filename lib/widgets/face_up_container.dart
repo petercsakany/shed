@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shed/controllers/game_controller.dart';
 import 'package:shed/widgets/card_widget.dart';
 
 class FaceUpContainer extends StatelessWidget {
-  const FaceUpContainer({super.key});
+  FaceUpContainer({super.key});
+  final GameController gameController = Get.put(GameController());
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
         child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(
-          4,
-          (index) => CardWidget(
-            imagePath: 'assets/images/QD.png',
-            isSelected: false,
-            onSelect: () {},
-          ),
-        ),
-      ),
+      child: Obx(() => Row(
+            children: gameController.playerFaceUp.map((card) {
+              return CardWidget(
+                  imagePath: card.imagePath,
+                  isSelected: false,
+                  onSelect: () {});
+            }).toList(),
+          )),
     ));
   }
 }

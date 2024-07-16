@@ -8,8 +8,8 @@ class PileWidget extends StatelessWidget {
     return Container(
       height: 100,
       width: 60,
-      color: Colors.white,
-      child: const Center(child: Text('Pile')),
+      color: Colors.transparent,
+      child: Image.asset('assets/images/2B.png'),
     );
   }
 }

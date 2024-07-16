@@ -21,8 +21,12 @@ class CardGameScreen extends StatelessWidget {
             flex: 2,
             child: Container(
               color: const Color(0xFFD7CDCD),
-              child: const Center(
-                child: AiFaceUpContainer(),
+              child: Center(
+                child: Column(
+                  children: [
+                    AiFaceUpContainer(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -37,7 +41,7 @@ class CardGameScreen extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    const FaceUpContainer(),
+                    FaceUpContainer(),
                     InHandContainer(),
                   ],
                 ),
@@ -49,7 +53,12 @@ class CardGameScreen extends StatelessWidget {
                 gameController.initializeDeck();
                 gameController.initialDeal();
               },
-              child: const Text('button'))
+              child: const Text('button')),
+          ElevatedButton(
+              onPressed: () {
+                gameController.discardSelectedCards();
+              },
+              child: const Text('Discard')),
         ],
       ),
     );

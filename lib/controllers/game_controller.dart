@@ -1,7 +1,8 @@
 import 'dart:math';
-
 import 'package:get/get.dart';
 import 'package:shed/models/card_item.dart';
+
+enum Turn { player, ai }
 
 class GameController extends GetxController {
   var deck = <CardItem>[].obs;
@@ -33,10 +34,7 @@ class GameController extends GetxController {
     "A"
   ];
 
-  // Initialize the deck and shuffle
   void initializeDeck() {
-    // ignore: avoid_print
-    print('Initialize deck');
     deck.clear();
     for (var suit in suits) {
       for (var rank in ranks) {
@@ -47,8 +45,6 @@ class GameController extends GetxController {
   }
 
   void initialDeal() {
-    // ignore: avoid_print
-    print('Initial deal');
     for (var i = 0; i < 24; i++) {
       CardItem card = getRandomCard();
       if (i < 4) {
@@ -65,10 +61,26 @@ class GameController extends GetxController {
     // Sort AI's face-up cards to pick the 4 highest ranked ones
     aiHand.sort((a, b) => ranks.indexOf(b.rank) - ranks.indexOf(a.rank));
     aiFaceUp.assignAll(aiHand.take(4));
+    aiFaceUp.refresh();
     aiHand.removeRange(0, 4);
 
     sortPlayerHand();
     gameStarted.value = true;
+  }
+
+  void resetGame() {
+    deck.clear();
+    discarded.clear();
+    selectedCards.clear();
+    playerHand.clear();
+    playerFaceUp.clear();
+    playerFaceDown.clear();
+    aiHand.clear();
+    aiFaceUp.clear();
+    aiFaceDown.clear();
+
+    gameStarted.value = false;
+    firstTurn.value = true;
   }
 
   CardItem getRandomCard() {
@@ -89,5 +101,34 @@ class GameController extends GetxController {
       selectedCards.add(card);
     }
     playerHand.refresh();
+  }
+
+  void discardSelectedCards() {
+    if (selectedCards.isNotEmpty) {
+      var rank = selectedCards[0].rank;
+      var allSameRank = selectedCards.every((card) => card.rank == rank);
+      if (playerFaceUp.length < 4) {
+        for (var card in selectedCards) {
+          playerFaceUp.add(card);
+          playerHand.remove(card);
+        }
+        playerFaceUp.refresh();
+        playerHand.refresh();
+        selectedCards.clear();
+      } else if (allSameRank) {
+        for (var card in selectedCards) {
+          discarded.add(card);
+          playerHand.remove(card);
+        }
+        playerHand.refresh();
+        selectedCards.clear();
+      }
+    } else {
+      Get.snackbar(
+        '',
+        'Choose one or more cards!',
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
 }
