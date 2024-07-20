@@ -54,11 +54,12 @@ class CardGameScreen extends StatelessWidget {
                 gameController.initialDeal();
               },
               child: const Text('button')),
-          ElevatedButton(
-              onPressed: () {
-                gameController.discardSelectedCards();
-              },
-              child: const Text('Discard')),
+          Obx(() => ElevatedButton(
+                onPressed: gameController.discardButton.value
+                    ? gameController.discardSelectedCards
+                    : null,
+                child: const Text('Discard'),
+              ))
         ],
       ),
     );

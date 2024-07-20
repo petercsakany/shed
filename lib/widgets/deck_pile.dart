@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PileWidget extends StatelessWidget {
-  const PileWidget({super.key});
+class DeckPile extends StatelessWidget {
+  const DeckPile({super.key});
 
   @override
   Widget build(BuildContext context) {
