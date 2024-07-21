@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:get/get.dart';
 import 'package:shed/models/card_item.dart';
 
-enum Turn { player, ai }
+enum Turn { initial, player, ai }
 
 class GameController extends GetxController {
   var deck = <CardItem>[].obs;
@@ -15,10 +15,10 @@ class GameController extends GetxController {
   var aiHand = <CardItem>[].obs;
   var aiFaceUp = <CardItem>[].obs;
   var aiFaceDown = <CardItem>[].obs;
-  var firstTurn = true.obs;
   var gameStarted = false.obs;
   var selectedCards = <CardItem>[].obs;
-  var currentTurn = Turn.player.obs;
+  var currentTurn = Turn.initial.obs;
+  var gameButton = true.obs;
   var discardButton = false.obs;
   var discardPileImage = 'assets/images/1B.png'.obs;
   List<String> suits = ["C", "D", "H", "S"];
@@ -69,6 +69,7 @@ class GameController extends GetxController {
     aiHand.removeRange(0, 4);
 
     sortPlayerHand();
+    gameButton.value = false;
   }
 
   void resetGame() {
@@ -83,34 +84,47 @@ class GameController extends GetxController {
     aiFaceDown.clear();
 
     gameStarted.value = false;
-    firstTurn.value = true;
-    currentTurn.value = Turn.player;
+    currentTurn.value = Turn.initial;
   }
 
   void nextTurn() {
+    print(currentTurn.value.toString());
     if (currentTurn.value == Turn.ai) {
       aiTurn().then((_) {
         nextTurn();
       });
     }
+    if (currentTurn.value == Turn.player) {
+      final validMoves = playerHand.where((card) => isValidMove(card)).toList();
+      if (validMoves.isEmpty) {
+        for (CardItem card in discarded) {
+          playerHand.add(card);
+        }
+        discarded.clear();
+        discardPileImage.value = 'assets/images/1B.png';
+        currentTurn.value = Turn.ai;
+        Get.snackbar('Player', 'Player had to take the discard pile.');
+        nextTurn();
+      }
+    }
   }
 
   Future<void> aiTurn() async {
-    await Future.delayed(const Duration(seconds: 2));
     if (currentTurn.value == Turn.ai) {
       Get.snackbar('Turn', 'Ai is taking its turn.',
           duration: const Duration(seconds: 2));
+
+      await Future.delayed(const Duration(seconds: 2));
+
       final validMoves = aiHand.where((card) => isValidMove(card)).toList();
-      print('hand: ${aiHand.toJson()}');
-      print('vmoves: $validMoves');
-      print('discarded: ${discarded.toJson()}');
+
       if (validMoves.isEmpty) {
-        Get.snackbar("AI Turn", "AI has to take the discard pile.");
         for (CardItem card in discarded) {
           aiHand.add(card);
         }
         discarded.clear();
         discardPileImage.value = 'assets/images/1B.png';
+        currentTurn.value = Turn.player;
         return;
       }
 
@@ -125,30 +139,35 @@ class GameController extends GetxController {
               (ranks.indexOf(b.rank) - ranks.indexOf(lastDiscardedCard.rank));
         });
       }
-
+      print('AI hand: ${aiHand.toJson().toString()}');
+      print('AI vmoves: $validMoves');
       final selectedCard = validMoves.first;
+      print('Ai selected: $selectedCard');
       aiHand.remove(selectedCard);
       discarded.add(selectedCard);
+      print('Discarded pile: ${discarded.toJson().toString()}');
 
       discardPileImage.value = discarded.last.imagePath;
-
-      if (selectedCard.rank == 'T') {
-        discarded.clear();
-        discardPileImage.value = 'assets/images/1B.png';
-      }
 
       while (aiHand.length < 4) {
         aiHand.add(getRandomCard());
       }
+      if (selectedCard.rank == 'T') {
+        discarded.clear();
+        discardPileImage.value = 'assets/images/1B.png';
+        currentTurn.value = Turn.ai;
+        return;
+      }
+      currentTurn.value = Turn.player;
     }
   }
 
   void selectCard(CardItem card) {
-    if (selectedCards.isNotEmpty) discardButton.value = true;
-    if (selectedCards.length > 4) {
+    if (selectedCards.length >= 4 && !card.isSelected) {
       Get.snackbar('', 'You cannot select more than 4 cards.');
       return;
     }
+    if (!isValidMove(card)) return;
     card.isSelected = !card.isSelected;
     if (selectedCards.contains(card)) {
       selectedCards.remove(card);
@@ -156,6 +175,10 @@ class GameController extends GetxController {
       selectedCards.add(card);
     }
     playerHand.refresh();
+    print(selectedCards.toJson().toString());
+    selectedCards.isNotEmpty
+        ? discardButton.value = true
+        : discardButton.value = false;
   }
 
   void discardSelectedCards() {
@@ -169,20 +192,32 @@ class GameController extends GetxController {
           playerHand.remove(card);
         }
         playerFaceUp.refresh();
-      } else if (allSameRank) {
-        for (var card in selectedCards) {
-          discarded.add(card);
-          playerHand.remove(card);
+      } else {
+        if (allSameRank) {
+          for (var card in selectedCards) {
+            discarded.add(card);
+            playerHand.remove(card);
+          }
+          while (playerHand.length < 4) {
+            CardItem card = getRandomCard();
+            playerHand.add(card);
+          }
+          discardPileImage.value = discarded.last.imagePath;
+          sortPlayerHand();
+        } else {
+          Get.snackbar('', 'You can only discard cards of the same value.');
         }
-        while (playerHand.length < 4) {
-          CardItem card = getRandomCard();
-          playerHand.add(card);
-        }
-        discardPileImage.value = discarded.last.imagePath;
-        sortPlayerHand();
       }
       playerHand.refresh();
       selectedCards.clear();
+      if (currentTurn.value != Turn.initial) {
+        currentTurn.value = Turn.ai;
+      }
+      if (playerFaceUp.length == 4 && currentTurn.value == Turn.initial) {
+        currentTurn.value = determineStartingPlayer();
+        gameStarted.value = true;
+      }
+      nextTurn();
     } else {
       Get.snackbar(
         '',
@@ -193,6 +228,7 @@ class GameController extends GetxController {
   }
 
   bool isValidMove(CardItem card) {
+    if (currentTurn.value == Turn.initial) return true;
     if (discarded.isEmpty) return true;
     if (card.rank == '2' || card.rank == 'T') return true;
     CardItem lastDiscardedCard = discarded.last;

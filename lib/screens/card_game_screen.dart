@@ -48,12 +48,15 @@ class CardGameScreen extends StatelessWidget {
               ),
             ),
           ),
-          ElevatedButton(
-              onPressed: () {
-                gameController.initializeDeck();
-                gameController.initialDeal();
-              },
-              child: const Text('button')),
+          Obx(() => ElevatedButton(
+                onPressed: gameController.gameButton.value
+                    ? () {
+                        gameController.initializeDeck();
+                        gameController.initialDeal();
+                      }
+                    : null,
+                child: const Text('Deal cards'),
+              )),
           Obx(() => ElevatedButton(
                 onPressed: gameController.discardButton.value
                     ? gameController.discardSelectedCards
