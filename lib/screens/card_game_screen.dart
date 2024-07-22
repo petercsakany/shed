@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shed/controllers/game_controller.dart';
+import 'package:shed/widgets/gradient_button.dart';
 import 'package:shed/widgets/in_hand_container.dart';
 
 import '../widgets/ai_face_up_container.dart';
@@ -14,13 +15,13 @@ class CardGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F0F0),
+      backgroundColor: const Color(0xFF222831),
       body: Column(
         children: [
           Expanded(
             flex: 2,
             child: Container(
-              color: const Color(0xFFD7CDCD),
+              color: const Color(0xFF393E46),
               child: Center(
                 child: Column(
                   children: [
@@ -31,13 +32,13 @@ class CardGameScreen extends StatelessWidget {
             ),
           ),
           const Expanded(
-            flex: 2,
+            flex: 1,
             child: PilesContainer(),
           ),
           Expanded(
-            flex: 4,
+            flex: 3,
             child: Container(
-              color: const Color(0xFFD7CDCD),
+              color: const Color(0xFF393E46),
               child: Center(
                 child: Column(
                   children: [
@@ -48,21 +49,43 @@ class CardGameScreen extends StatelessWidget {
               ),
             ),
           ),
-          Obx(() => ElevatedButton(
-                onPressed: gameController.gameButton.value
-                    ? () {
-                        gameController.initializeDeck();
-                        gameController.initialDeal();
-                      }
-                    : null,
-                child: const Text('Deal cards'),
-              )),
-          Obx(() => ElevatedButton(
-                onPressed: gameController.discardButton.value
-                    ? gameController.discardSelectedCards
-                    : null,
-                child: const Text('Discard'),
-              ))
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Obx(() => GradientButton(
+                        text: 'Deal cards',
+                        colors: gameController.gameButton.value
+                            ? const [Colors.blue, Colors.cyan]
+                            : [Colors.grey, Colors.grey],
+                        icon: Icons.back_hand_outlined,
+                        onPressed: gameController.gameButton.value
+                            ? () {
+                                gameController.initializeDeck();
+                                gameController.initialDeal();
+                              }
+                            : null,
+                      )),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Obx(() => GradientButton(
+                        text: 'Discard',
+                        colors: gameController.discardButton.value
+                            ? const [Colors.redAccent, Colors.orangeAccent]
+                            : [Colors.grey, Colors.grey],
+                        icon: Icons.remove_circle_outline,
+                        onPressed: gameController.discardButton.value
+                            ? gameController.discardSelectedCards
+                            : null,
+                      ))
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

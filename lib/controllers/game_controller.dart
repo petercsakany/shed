@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shed/models/card_item.dart';
 
@@ -111,8 +112,12 @@ class GameController extends GetxController {
 
   Future<void> aiTurn() async {
     if (currentTurn.value == Turn.ai) {
-      Get.snackbar('Turn', 'Ai is taking its turn.',
-          duration: const Duration(seconds: 2));
+      Get.snackbar(
+        'Turn',
+        'Ai is taking its turn.',
+        duration: const Duration(seconds: 2),
+        colorText: Colors.white,
+      );
 
       await Future.delayed(const Duration(seconds: 2));
 
@@ -210,6 +215,7 @@ class GameController extends GetxController {
       }
       playerHand.refresh();
       selectedCards.clear();
+      discardButton.value = false;
       if (currentTurn.value != Turn.initial) {
         currentTurn.value = Turn.ai;
       }

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shed/models/settings.dart';
 
 class CardWidget extends StatefulWidget {
   final String imagePath;
   final bool isSelected;
   final VoidCallback onSelect;
-  const CardWidget(
-      {super.key,
-      required this.imagePath,
-      required this.isSelected,
-      required this.onSelect});
+  final Settings settings;
+  const CardWidget({
+    super.key,
+    required this.imagePath,
+    required this.isSelected,
+    required this.onSelect,
+    required this.settings,
+  });
 
   @override
   State<CardWidget> createState() => _CardWidgetState();
@@ -48,14 +52,14 @@ class _CardWidgetState extends State<CardWidget>
           child: Transform.translate(
             offset: widget.isSelected ? const Offset(0, -10) : Offset.zero,
             child: Container(
-              height: 80,
-              width: 60,
+              height: widget.settings.cardHeight,
+              width: widget.settings.cardWidth,
               margin: const EdgeInsets.symmetric(horizontal: 1),
               child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5.0),
+                  borderRadius: BorderRadius.circular(1.0),
                   child: Image.asset(
                     widget.imagePath,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   )),
             ),
           ),
