@@ -32,7 +32,7 @@ class CardGameScreen extends StatelessWidget {
             ),
           ),
           const Expanded(
-            flex: 1,
+            flex: 2,
             child: PilesContainer(),
           ),
           Expanded(
@@ -53,35 +53,40 @@ class CardGameScreen extends StatelessWidget {
             flex: 1,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Obx(() => GradientButton(
-                        text: 'Deal cards',
-                        colors: gameController.gameButton.value
-                            ? const [Colors.blue, Colors.cyan]
-                            : [Colors.grey, Colors.grey],
-                        icon: Icons.back_hand_outlined,
-                        onPressed: gameController.gameButton.value
-                            ? () {
-                                gameController.initializeDeck();
-                                gameController.initialDeal();
-                              }
-                            : null,
-                      )),
-                  const SizedBox(
-                    width: 10,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Obx(() => GradientButton(
+                            text: 'Deal cards',
+                            colors: gameController.gameButton.value
+                                ? const [Colors.blue, Colors.cyan]
+                                : [Colors.grey, Colors.grey],
+                            icon: Icons.back_hand_outlined,
+                            onPressed: gameController.gameButton.value
+                                ? () {
+                                    gameController.initializeDeck();
+                                    gameController.initialDeal();
+                                  }
+                                : null,
+                          )),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Obx(() => GradientButton(
+                            text: 'Discard',
+                            colors: gameController.discardButton.value
+                                ? const [Colors.redAccent, Colors.orangeAccent]
+                                : [Colors.grey, Colors.grey],
+                            icon: Icons.remove_circle_outline,
+                            onPressed: gameController.discardButton.value
+                                ? gameController.discardSelectedCards
+                                : null,
+                          ))
+                    ],
                   ),
-                  Obx(() => GradientButton(
-                        text: 'Discard',
-                        colors: gameController.discardButton.value
-                            ? const [Colors.redAccent, Colors.orangeAccent]
-                            : [Colors.grey, Colors.grey],
-                        icon: Icons.remove_circle_outline,
-                        onPressed: gameController.discardButton.value
-                            ? gameController.discardSelectedCards
-                            : null,
-                      ))
                 ],
               ),
             ),

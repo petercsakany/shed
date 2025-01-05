@@ -96,27 +96,37 @@ class GameController extends GetxController {
       });
     }
     if (currentTurn.value == Turn.player) {
-      final validMoves = playerHand.where((card) => isValidMove(card)).toList();
-      if (validMoves.isEmpty) {
-        for (CardItem card in discarded) {
-          playerHand.add(card);
-        }
-        discarded.clear();
-        discardPileImage.value = 'assets/images/1B.png';
-        currentTurn.value = Turn.ai;
-        Get.snackbar('Player', 'Player had to take the discard pile.');
-        nextTurn();
+      playerTurn();
+    }
+  }
+
+  void playerTurn() {
+    if (playerHand.isEmpty && deck.isEmpty) {
+      for (CardItem card in playerFaceUp) {
+        playerHand.add(card);
+        playerFaceUp.remove(card);
       }
+    }
+    final validMoves = playerHand.where((card) => isValidMove(card)).toList();
+    if (validMoves.isEmpty) {
+      noValidMoves(playerHand, Turn.ai);
+      nextTurn();
     }
   }
 
   Future<void> aiTurn() async {
     if (currentTurn.value == Turn.ai) {
       Get.snackbar(
-        'Turn',
-        'Ai is taking its turn.',
+        '',
+        '',
         duration: const Duration(seconds: 2),
-        colorText: Colors.white,
+        backgroundColor: Colors.grey,
+        colorText: Colors.yellow,
+        messageText: const Text(
+          'Ai is taking its turn.',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.yellowAccent),
+        ),
       );
 
       await Future.delayed(const Duration(seconds: 2));
@@ -124,12 +134,7 @@ class GameController extends GetxController {
       final validMoves = aiHand.where((card) => isValidMove(card)).toList();
 
       if (validMoves.isEmpty) {
-        for (CardItem card in discarded) {
-          aiHand.add(card);
-        }
-        discarded.clear();
-        discardPileImage.value = 'assets/images/1B.png';
-        currentTurn.value = Turn.player;
+        noValidMoves(aiHand, Turn.player);
         return;
       }
 
@@ -154,7 +159,7 @@ class GameController extends GetxController {
 
       discardPileImage.value = discarded.last.imagePath;
 
-      while (aiHand.length < 4) {
+      while (aiHand.length < 4 && deck.isNotEmpty) {
         aiHand.add(getRandomCard());
       }
       if (selectedCard.rank == 'T') {
@@ -162,6 +167,14 @@ class GameController extends GetxController {
         discardPileImage.value = 'assets/images/1B.png';
         currentTurn.value = Turn.ai;
         return;
+      }
+      if (deck.isEmpty && aiHand.isEmpty) {
+        if (aiFaceUp.isNotEmpty) {
+          aiHand.addAll(aiFaceUp);
+          aiFaceUp.clear();
+        } else {
+          aiHand.add(aiFaceDown.removeLast());
+        }
       }
       currentTurn.value = Turn.player;
     }
@@ -247,6 +260,13 @@ class GameController extends GetxController {
     return isValid;
   }
 
+  void noValidMoves(RxList<CardItem> hand, Turn turn) {
+    hand.addAll(discarded);
+    discarded.clear();
+    discardPileImage.value = 'assets/images/1B.png';
+    currentTurn.value = turn;
+  }
+
   String? findLowestValidStartingCard(RxList<CardItem> hand) {
     List<String> validRanks =
         ranks.where((rank) => !['2', '5', '10'].contains(rank)).toList();
@@ -287,9 +307,7 @@ class GameController extends GetxController {
   }
 
   CardItem getRandomCard() {
-    final random = Random();
-    final randomIndex = random.nextInt(deck.length);
-    return deck.removeAt(randomIndex);
+    return deck.removeAt(Random().nextInt(deck.length));
   }
 
   void sortPlayerHand() {
